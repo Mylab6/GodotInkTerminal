@@ -41,6 +41,7 @@ func execute_input():
 	
 	# Tokenize and execute the input
 	if	input.text.is_valid_integer():
+		print('trying with int')
 		var choiceAsInt = int(input.text)  
 		_select_choice(choiceAsInt)
 	else:
@@ -53,21 +54,17 @@ func execute_input():
 	# Clear the input
 	input.text = ''
 
-func output_print(txt: String):
-	output.bbcode_text += txt
+func output_print(txt: String, addLine: bool = false):
+	output.bbcode_text += txt 
+	if addLine:
+		output.bbcode_text += '\n'
 
 
 	
 
 func print_ink(listOfText):
-	print('In ink 61')
-	if typeof(listOfText) == TYPE_ARRAY :	
-		for  t in listOfText:
-				output_print(t)
-	else:
-		output_print(listOfText)
-	
-	
+
+	output_print(listOfText)	
 	output_print(prompt_template)	
 
 
@@ -96,14 +93,15 @@ func _continued(text, tags):
 	
 func _prompt_choices(choices):
 		var index = 0 ; 
+		output_print("Select", true )
 		for c in choices :
-			c = index + " :" +  c 
+			c = str(index) + ": " +  c + '\n'
 			index = index + 1 
+			output_print(c)
 
 
 
-		if !choices.empty():
-			print_ink(choices)
+	
 	
 			# In a real world scenario, _select_choice' could be
 			# connected to a signal, like 'Button.pressed'.

@@ -404,6 +404,10 @@ __InkRuntime="*res://addons/inkgd/runtime/static/ink_runtime.gd"
 
 enabled=PoolStringArray( "res://addons/inkgd/plugin.cfg" )
 
+[global]
+
+build=false
+
 [input]
 
 interact={
