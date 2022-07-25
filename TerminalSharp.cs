@@ -1,183 +1,211 @@
+#if TOOLS
 using Godot;
-using System;
+using System.Linq;
 
+[Tool]
 public class TerminalSharp : Control
 {
+	private InkPlayer player;
+	private bool storyStarted;
 
-				public String  CurrentStoryResPath;
-				public String  PromptTemplate  = '\n[Color] = ; //66aaff]godot@terminal:~ [b]$[/b][/color] ';
-				public String  InputTemplate  = '[Color] = ; //ffffff]%s[/color]';
-				public String = '\n[Color] = ; //dd0000][ERROR] %s[/color]' ;
+	private Button loadButton;
+	private FileDialog fileDialog;
 
-				var parser = new CommandParser();
-				var commands = new BashLikeCommands();
+	private Label storyNameLabel;
 
-				Onready Var Output : = GetNode("Output") as RichTextLabel;
-				Onready Var Input : = GetNode("Input") as LineEdit;
+	private Button startButton;
+	private Button stopButton;
+	private Button clearButton;
 
+	private VBoxContainer storyText;
+	private VBoxContainer storyChoices;
 
-				public override void _Ready()
+	private ScrollContainer scroll;
+
+	public override void _Ready()
+	{
+		// Initialize top.
+		loadButton = GetNode<Button>("Container/Left/Top/LoadButton");
+		fileDialog = GetNode<FileDialog>("FileDialog");
+		storyNameLabel = GetNode<Label>("Container/Left/Top/Label");
+		startButton = GetNode<Button>("Container/Left/Top/StartButton");
+		stopButton = GetNode<Button>("Container/Left/Top/StopButton");
+		clearButton = GetNode<Button>("Container/Left/Top/ClearButton");
+
+		loadButton.Connect("pressed", fileDialog, "popup_centered");
+		fileDialog.Connect("popup_hide", this, nameof(LoadStoryResource));
+		startButton.Connect("pressed", this, nameof(StartStory));
+		stopButton.Connect("pressed", this, nameof(StopStory));
+		clearButton.Connect("pressed", this, nameof(ClearStory), new Godot.Collections.Array { false });
+
+		// Initialize bottom.
+		storyText = GetNode<VBoxContainer>("Container/Left/Scroll/Margin/StoryText");
+		storyChoices = GetNode<VBoxContainer>("Container/Right/StoryChoices");
+		scroll = GetNode<ScrollContainer>("Container/Left/Scroll");
+
+		// Set icons.
+		loadButton.Icon = GetIcon("Load", "EditorIcons");
+		startButton.Icon = GetIcon("Play", "EditorIcons");
+		stopButton.Icon = GetIcon("Stop", "EditorIcons");
+		clearButton.Icon = GetIcon("Clear", "EditorIcons");
+
+		UpdateTop();
+	}
+
+	private void UpdateTop()
+	{
+		bool hasStory = player != null;
+
+		// Do not judge me.
+		storyNameLabel.Text = hasStory ? ((Resource)player.Get("story")).ResourcePath : string.Empty;
+
+		startButton.Visible = hasStory && !storyStarted;
+		stopButton.Visible = hasStory && storyStarted;
+		clearButton.Visible = hasStory;
+		clearButton.Disabled = storyText.GetChildCount() <= 0;
+
+		storyChoices.GetParent<Control>().Visible = hasStory;
+	}
+
+	private void LoadStoryResource()
+	{
+		StopStory();
+		player = null;
+
+		if (!string.IsNullOrEmpty(fileDialog.CurrentFile))
+		{
+			player = new InkPlayer();
+			player.LoadStory(ResourceLoader.Load<Resource>(fileDialog.CurrentPath));
+
+			player.Connect(nameof(InkPlayer.InkContinued), this, nameof(OnStoryContinued));
+			player.Connect(nameof(InkPlayer.InkChoices), this, nameof(OnStoryChoices));
+			player.Connect(nameof(InkPlayer.InkEnded), this, nameof(OnStoryEnded));
+
+			AddChild(player);
+		}
+
+		UpdateTop();
+	}
+
+	private void StartStory()
+	{
+		if (player == null) return;
+
+		storyStarted = true;
+		player.Continue();
+
+		UpdateTop();
+	}
+
+	private void StopStory()
+	{
+		storyStarted = false;
+		player?.LoadStory();
+
+		ClearStory(true);
+	}
+
+	private void ClearStory(bool clearChoices)
+	{
+		RemoveAllStoryContent();
+		if (clearChoices)
+			RemoveAllChoices();
+
+		UpdateTop();
+	}
+
+	private void OnStoryContinued(string text, string[] tags)
+	{
+		text = text.Trim();
+		if (text.Length > 0)
+		{
+			Label newLine = new Label()
+			{
+				Autowrap = true,
+				Text = text,
+			};
+			AddToStory(newLine);
+
+			if (tags.Length > 0)
+			{
+				newLine = new Label()
 				{
-					//output_print(prompt_template)
+					Autowrap = true,
+					Align = Label.AlignEnum.Center,
+					Text = $"# {string.Join(", ", tags)}",
+				};
+				newLine.AddColorOverride("font_color", GetColor("font_color_disabled", "Button"));
+				AddToStory(newLine);
+			}
+		}
 
-					Input.GrabFocus();
-					Input.Connect('guiInput', this, nameof(onInput));
-					OutputPrint(commands.NewIntroScreen());
-					OutputPrint(PromptTemplate);
-					_ReadyInk();
+		player.Continue();
+	}
 
-					//yield(get_tree().create_timer(1.0), "timeout")
-				}
+	private void OnStoryChoices(string[] choices)
+	{
+		int i = 0;
+		foreach (string choice in choices)
+		{
+			if (i < storyChoices.GetChildCount()) continue;
 
-				{
-					//forceInput("info")
-				}
-				public void OnInput(InputEvent @event)
-				{
-					if (Event Is InputEventKey)
-					{
-						if (@event.IsActionPressed('cmdEnter'))
-						{
-							ExecuteInput();
-						}
+			Button button = new Button()
+			{
+				Text = choice,
+			};
+			button.Connect("pressed", this, nameof(ClickChoice), new Godot.Collections.Array() { i });
+			storyChoices.AddChild(button);
+			++i;
+		}
+	}
 
-				// Implementing this here as the BashLikeCommands should not allow people
-				// to quit a game that uses those commands.
-				// warning-ignore:unused_argument
-				// warning-ignore:unused_argument
-				public void CmdExit(Array args, String stdin)
-						{
-					GetTree().CallDeferred('quit');
-					return '';
-						}
+	private void OnStoryEnded()
+	{
+		CanvasItem endOfStory = new VBoxContainer();
+		endOfStory.AddChild(new HSeparator());
+		CanvasItem endOfStoryLine = new HBoxContainer();
+		endOfStory.AddChild(endOfStoryLine);
+		endOfStory.AddChild(new HSeparator());
+		Control separator = new HSeparator()
+		{
+			SizeFlagsHorizontal = (int)(SizeFlags.Fill | SizeFlags.Expand),
+		};
+		Label endOfStoryText = new Label()
+		{
+			Text = "End of story"
+		};
+		endOfStoryLine.AddChild(separator);
+		endOfStoryLine.AddChild(endOfStoryText);
+		endOfStoryLine.AddChild(separator.Duplicate());
+		AddToStory(endOfStory);
+	}
 
-				public void ExecuteInput()
-						{
+	private void ClickChoice(int idx)
+	{
+		player.ChooseChoiceIndex(idx);
+		RemoveAllChoices();
+		AddToStory(new HSeparator());
+		player.Continue();
+	}
 
-					// Tokenize and execute the input
-					if (Input.Text.IsValidInteger())
-							{
-						var choiceAsInt = Int(Input.Text);
-						_SelectChoice(choiceAsInt);
-							}
-					else
-							{
-						var  result = parser.Tokenize(Input.Text);
-						var stdout = parser.Execute(result, [this], Commands, ErrorTemplate);
-							}
-					// Print everything
-							{
-						OutputPrint(InputTemplate % Input.Text);
-						OutputPrint(Stdout);
-							}
-					OutputPrint(PromptTemplate);
-					// Clear the input
-					Input.Text = '';
-						}
+	private async void AddToStory(CanvasItem item)
+	{
+		storyText.AddChild(item);
+		await ToSignal(GetTree(), "idle_frame");
+		await ToSignal(GetTree(), "idle_frame");
+		scroll.ScrollVertical = (int)scroll.GetVScrollbar().MaxValue;
+	}
 
-				public void OutputPrint(String txt)
-						{
-					Output.BbcodeText +  = txt;
-						}
+	private void RemoveAllStoryContent()
+	{
+		foreach (Node n in storyText.GetChildren())
+			storyText.RemoveChild(n);
+	}
 
-
-						{
-
-						}
-
-				public void PrintInk(?TYPE? listOfText)
-						{
-					GD.Print('In Ink 61');
-					if (Typeof(listOfText) == TYPE_ARRAY)
-							{
-						foreach (var T in listOfText)
-								{
-								OutputPrint(T);
-								}
-					else
-								{
-						OutputPrint(listOfText);
-								}
-
-
-					OutputPrint(PromptTemplate);
-							}
-
-
-
-				// INK Stuff
-				private void ReadyInk()
-							{
-						inkPlayer.Connect("loaded", this, nameof(_story_loaded));
-						inkPlayer.Connect("continued", this, nameof(_continued));
-						inkPlayer.Connect("prompt_choices", this, nameof(_prompt_choices));
-						inkPlayer.Connect("ended", this, nameof(_ended));
-							}
-
-							{
-						inkPlayer.CreateStory();
-							}
-
-
-						}
-				private void StoryLoaded(bool successfully)
-						{
-						if (!successfully)
-							{
-							return ;
-							}
-
-							{
-						inkPlayer.ContinueStory();
-							}
-
-
-						}
-				private void Continued(?TYPE? text, ?TYPE? tags)
-						{
-						PrintInk(text);
-						inkPlayer.ContinueStory();
-						}
-
-
-					}
-				private void PromptChoices(?TYPE? choices)
-					{
-						int index = 0;
-						foreach (var C in choices)
-						{
-							C = index + " :" + C;
-							index = index + 1;
-						}
-
-
-
-						{
-						if (!choices.Empty())
-							{
-							PrintInk(choices);
-							}
-
-							{
-							// In a real world scenario, _select_choice' could be
-							// connected to a signal, like 'Button.pressed'.
-							//_select_choice(0)
-							}
-
-
-						}
-				private void Ended()
-						{
-						PrintInk(["The End"]);
-						}
-
-
-					}
-				private void SelectChoice(?TYPE? index)
-					{
-						inkPlayer.ChooseChoiceIndex(index);
-					}
-				//        _ink_player._continue_story()
-
-				}
+	private void RemoveAllChoices()
+	{
+		foreach (Node n in storyChoices.GetChildren().OfType<Button>())
+			storyChoices.RemoveChild(n);
+	}
 }
+#endif
