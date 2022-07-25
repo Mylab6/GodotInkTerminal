@@ -1,5 +1,6 @@
 #if TOOLS
 using Godot;
+using System;
 using System.Linq;
 
 [Tool]
@@ -90,17 +91,17 @@ public LineEdit input;
 		StopStory();
 		player = null;
 
-		if (!string.IsNullOrEmpty(fileDialog.CurrentFile))
-		{
+		//if (!string.IsNullOrEmpty(fileDialog.CurrentFile))
+		//{
 			player = new InkPlayer();
-			player.LoadStory(ResourceLoader.Load<Resource>(fileDialog.CurrentPath));
+			player.LoadStory(ResourceLoader.Load<Resource>(currentStoryResPath));
 
 			player.Connect(nameof(InkPlayer.InkContinued), this, nameof(OnStoryContinued));
 			player.Connect(nameof(InkPlayer.InkChoices), this, nameof(OnStoryChoices));
 			player.Connect(nameof(InkPlayer.InkEnded), this, nameof(OnStoryEnded));
 
 			AddChild(player);
-		}
+		//}
 
 		UpdateTop();
 	}
@@ -142,8 +143,9 @@ public LineEdit input;
 				Autowrap = true,
 				Text = text,
 			};
-			AddToStory(newLine);
-
+			//AddToStory(newLine);
+			AddToTerminal(text);
+			
 			if (tags.Length > 0)
 			{
 				newLine = new Label()
@@ -160,7 +162,15 @@ public LineEdit input;
 		player.Continue();
 	}
 
-	private void OnStoryChoices(string[] choices)
+    private void AddToTerminal(string text)
+    {
+
+		output.Text += text;
+
+       // throw new NotImplementedException();
+    }
+
+    private void OnStoryChoices(string[] choices)
 	{
 		int i = 0;
 		foreach (string choice in choices)
