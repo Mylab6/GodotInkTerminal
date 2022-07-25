@@ -13,9 +13,15 @@ onready var input := $Input as LineEdit
 
 
 func _ready() -> void:
-	output_print(prompt_template)
+	#output_print(prompt_template)
 	input.grab_focus()
 	input.connect('gui_input', self, 'on_input')
+	output_print(commands.newIntroScreen())
+	output_print(prompt_template)	
+	
+	#yield(get_tree().create_timer(1.0), "timeout")
+
+	#forceInput("info")
 
 
 func on_input(event: InputEvent):
@@ -35,15 +41,19 @@ func execute_input():
 	
 	# Tokenize and execute the input
 	var result := parser.tokenize(input.text)
-	var stdout := parser.execute(result, [self, commands], error_template)
-	
+	forceInput(result) 
+func forceInput(result):
+	var stdout := parser.execute(result, [self, commands], error_template)	
 	# Print everything
 	output_print(input_template % input.text)
 	output_print(stdout)
-	output_print(prompt_template)
-	
+	output_print(prompt_template)	
 	# Clear the input
 	input.text = ''
 
 func output_print(txt: String):
 	output.bbcode_text += txt
+
+
+
+
