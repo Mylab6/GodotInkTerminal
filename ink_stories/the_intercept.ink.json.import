@@ -1,0 +1,14 @@
+[remap]
+
+importer="inkgd.ink.json"
+type="Resource"
+path="res://.import/the_intercept.ink.json-a5dd066f78aa910704dda952afdde604.res"
+
+[deps]
+
+source_file="res://ink_stories/the_intercept.ink.json"
+dest_files=[ "res://.import/the_intercept.ink.json-a5dd066f78aa910704dda952afdde604.res" ]
+
+[params]
+
+compress=true

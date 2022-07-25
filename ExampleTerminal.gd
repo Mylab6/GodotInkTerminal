@@ -1,5 +1,6 @@
 extends Control
 
+onready var _ink_player = $InkPlayer
 
 export var prompt_template := '\n[color=#66aaff]godot@terminal:~ [b]$[/b][/color] '
 export var input_template := '[color=#ffffff]%s[/color]'
@@ -18,12 +19,11 @@ func _ready() -> void:
 	input.connect('gui_input', self, 'on_input')
 	output_print(commands.newIntroScreen())
 	output_print(prompt_template)	
+	_readyInk()
 	
 	#yield(get_tree().create_timer(1.0), "timeout")
 
 	#forceInput("info")
-
-
 func on_input(event: InputEvent):
 	if event is InputEventKey:
 		if event.is_action_pressed('cmd_enter'):
@@ -40,9 +40,9 @@ func cmd_exit(args: Array, stdin: String):
 func execute_input():
 	
 	# Tokenize and execute the input
+	var choiceAsInt = int(input.text)  
+	print(choiceAsInt)
 	var result := parser.tokenize(input.text)
-	forceInput(result) 
-func forceInput(result):
 	var stdout := parser.execute(result, [self, commands], error_template)	
 	# Print everything
 	output_print(input_template % input.text)
@@ -50,10 +50,69 @@ func forceInput(result):
 	output_print(prompt_template)	
 	# Clear the input
 	input.text = ''
+	_select_choice(0)
 
 func output_print(txt: String):
 	output.bbcode_text += txt
 
 
+	
+
+func print_ink(listOfText):
+	print('In ink 61')
+	if typeof(listOfText) == TYPE_ARRAY :	
+		for  t in listOfText:
+				output_print(t)
+	else:
+		output_print(listOfText)
+	
+	
+	output_print(prompt_template)	
 
 
+
+# INK Stuff 
+func _readyInk():
+		_ink_player.connect("loaded", self, "_story_loaded")
+		_ink_player.connect("continued", self, "_continued")
+		_ink_player.connect("prompt_choices", self, "_prompt_choices")
+		_ink_player.connect("ended", self, "_ended")
+	
+		_ink_player.create_story()
+	
+	
+func _story_loaded(successfully: bool):
+		if !successfully:
+			return
+	
+		_ink_player.continue_story()
+	
+	
+func _continued(text, tags):
+		print_ink(text)
+		_ink_player.continue_story()
+	
+	
+func _prompt_choices(choices):
+		var index = 0 ; 
+		for c in choices :
+			c = index + " :" +  c 
+			index = index + 1 
+
+
+
+		if !choices.empty():
+			print_ink(choices)
+	
+			# In a real world scenario, _select_choice' could be
+			# connected to a signal, like 'Button.pressed'.
+			#_select_choice(0)
+	
+	
+func _ended():
+		print_ink(["The End"])
+	
+	
+func _select_choice(index):
+		_ink_player.choose_choice_index(index)
+#		_ink_player._continue_story()
