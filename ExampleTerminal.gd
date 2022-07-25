@@ -1,7 +1,9 @@
 extends Control
 
-onready var _ink_player = $InkPlayer
+var my_csharp_script = load("res://addons/paulloz.ink/InkPlayer.cs")
+var _ink_player = my_csharp_script.new()
 
+export var currentStoryResPath : String 
 export var prompt_template := '\n[color=#66aaff]godot@terminal:~ [b]$[/b][/color] '
 export var input_template := '[color=#ffffff]%s[/color]'
 export var error_template := '\n[color=#dd0000][ERROR] %s[/color]'
@@ -15,6 +17,7 @@ onready var input := $Input as LineEdit
 
 func _ready() -> void:
 	#output_print(prompt_template)
+	
 	input.grab_focus()
 	input.connect('gui_input', self, 'on_input')
 	output_print(commands.newIntroScreen())
