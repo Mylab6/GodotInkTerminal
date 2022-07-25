@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform: [linux, windows, mac, HTML5]
+      # removed mac due to costs ? orf actions ????
+        platform: [linux, windows,HTML5]
     steps:
       - uses: actions/checkout@v2
         with:

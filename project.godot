@@ -36,7 +36,7 @@ __InkRuntime="*res://addons/inkgd/runtime/static/ink_runtime.gd"
 
 [editor_plugins]
 
-enabled=PoolStringArray(  )
+enabled=PoolStringArray( "res://addons/inkgd/plugin.cfg" )
 
 [global]
 

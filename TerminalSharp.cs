@@ -21,10 +21,11 @@ public class TerminalSharp : Control
 	private VBoxContainer storyChoices;
 
 	private ScrollContainer scroll;
-
+	public string storyNameLabelText ; 
 	public override void _Ready()
 	{
 		// Initialize top.
+		/*
 		loadButton = GetNode<Button>("Container/Left/Top/LoadButton");
 		fileDialog = GetNode<FileDialog>("FileDialog");
 		storyNameLabel = GetNode<Label>("Container/Left/Top/Label");
@@ -50,6 +51,8 @@ public class TerminalSharp : Control
 		clearButton.Icon = GetIcon("Clear", "EditorIcons");
 
 		UpdateTop();
+		*/
+		UpdateTop(); 
 	}
 
 	private void UpdateTop()
@@ -57,14 +60,14 @@ public class TerminalSharp : Control
 		bool hasStory = player != null;
 
 		// Do not judge me.
-		storyNameLabel.Text = hasStory ? ((Resource)player.Get("story")).ResourcePath : string.Empty;
-
+		storyNameLabelText = hasStory ? ((Resource)player.Get("story")).ResourcePath : string.Empty;
+/*
 		startButton.Visible = hasStory && !storyStarted;
 		stopButton.Visible = hasStory && storyStarted;
 		clearButton.Visible = hasStory;
 		clearButton.Disabled = storyText.GetChildCount() <= 0;
 
-		storyChoices.GetParent<Control>().Visible = hasStory;
+		storyChoices.GetParent<Control>().Visible = hasStory;*/
 	}
 
 	private void LoadStoryResource()
