@@ -40,17 +40,18 @@ func cmd_exit(args: Array, stdin: String):
 func execute_input():
 	
 	# Tokenize and execute the input
-	var choiceAsInt = int(input.text)  
-	print(choiceAsInt)
-	var result := parser.tokenize(input.text)
-	var stdout := parser.execute(result, [self, commands], error_template)	
+	if	input.text.is_valid_integer():
+		var choiceAsInt = int(input.text)  
+		_select_choice(choiceAsInt)
+	else:
+		var result := parser.tokenize(input.text)
+		var stdout := parser.execute(result, [self, commands], error_template)	
 	# Print everything
-	output_print(input_template % input.text)
-	output_print(stdout)
+		output_print(input_template % input.text)
+		output_print(stdout)
 	output_print(prompt_template)	
 	# Clear the input
 	input.text = ''
-	_select_choice(0)
 
 func output_print(txt: String):
 	output.bbcode_text += txt
