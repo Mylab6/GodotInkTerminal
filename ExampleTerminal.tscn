@@ -4,7 +4,7 @@
 [ext_resource path="res://fonts/fira-code/fira_code_regular.tres" type="DynamicFont" id=2]
 [ext_resource path="res://fonts/fira-code/fira_code_bold.tres" type="DynamicFont" id=3]
 [ext_resource path="res://fonts/fira-code/fira_code_light.tres" type="DynamicFont" id=4]
-[ext_resource path="res://ink_stories/the_intercept.ink.json" type="Resource" id=5]
+[ext_resource path="res://ink_stories/mini.json" type="Resource" id=5]
 [ext_resource path="res://addons/inkgd/ink_player.gd" type="Script" id=6]
 
 [node name="ExampleTerminal" type="Control"]

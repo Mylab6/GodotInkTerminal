@@ -18,7 +18,7 @@ func _ready() -> void:
 	input.grab_focus()
 	input.connect('gui_input', self, 'on_input')
 	output_print(commands.newIntroScreen())
-	output_print(prompt_template)	
+	#output_print(prompt_template)	
 	_readyInk()
 	
 	#yield(get_tree().create_timer(1.0), "timeout")
@@ -50,7 +50,7 @@ func execute_input():
 	# Print everything
 		output_print(input_template % input.text)
 		output_print(stdout)
-	output_print(prompt_template)	
+
 	# Clear the input
 	input.text = ''
 
@@ -61,11 +61,6 @@ func output_print(txt: String, addLine: bool = false):
 
 
 	
-
-func print_ink(listOfText):
-
-	output_print(listOfText)	
-	output_print(prompt_template)	
 
 
 
@@ -87,7 +82,12 @@ func _story_loaded(successfully: bool):
 	
 	
 func _continued(text, tags):
-		print_ink(text)
+		print('In continued !')
+		print(text)
+		print('TAGS')
+		
+		print(  tags)
+		output_print(text)
 		_ink_player.continue_story()
 	
 	
@@ -98,20 +98,12 @@ func _prompt_choices(choices):
 			c = str(index) + ": " +  c + '\n'
 			index = index + 1 
 			output_print(c)
-
-
-
-	
-	
-			# In a real world scenario, _select_choice' could be
-			# connected to a signal, like 'Button.pressed'.
-			#_select_choice(0)
-	
 	
 func _ended():
-		print_ink(["The End"])
+		output_print("The End")
 	
 	
 func _select_choice(index):
 		_ink_player.choose_choice_index(index)
-#		_ink_player._continue_story()
+		print(_ink_player.current_text)
+		#_ink_player._continue_story()
