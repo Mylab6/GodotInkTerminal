@@ -22,8 +22,23 @@ public class TerminalSharp : Control
 
 	private ScrollContainer scroll;
 	public string storyNameLabelText ; 
+		public string  currentStoryResPath ; //: String 
+public string  prompt_template = "\n[color=#66aaff]godot@terminal:~ [b]$[/b][/color]";
+
+public string input_template = "[color=#ffffff]%s[/color]";
+public string  error_template = "\n[color=#dd0000][ERROR] %s[/color]";
+
+//var parser := CommandParser.new()
+//var commands := BashLikeCommands.new()
+
+//onready var output := $Output as RichTextLabel
+public RichTextLabel output;
+public LineEdit input; 
+//onready var input := $Input as LineEdit
 	public override void _Ready()
 	{
+
+
 		// Initialize top.
 		/*
 		loadButton = GetNode<Button>("Container/Left/Top/LoadButton");
