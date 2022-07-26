@@ -1,0 +1,15 @@
+[remap]
+
+importer="ink"
+type="Resource"
+path="res://.import/beatquestgames.json-6852c37fbab00a5908bc47fd1bfc8714.res"
+
+[deps]
+
+source_file="res://ink_exports/beatquestgames.json"
+dest_files=[ "res://.import/beatquestgames.json-6852c37fbab00a5908bc47fd1bfc8714.res" ]
+
+[params]
+
+is_master_file=true
+compress=true

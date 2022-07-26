@@ -1,0 +1,15 @@
+[remap]
+
+importer="ink"
+type="Resource"
+path="res://.import/readme.json-e60f3cd38e4598e763ea7cf82a4d84bf.res"
+
+[deps]
+
+source_file="res://ink_exports/readme.json"
+dest_files=[ "res://.import/readme.json-e60f3cd38e4598e763ea7cf82a4d84bf.res" ]
+
+[params]
+
+is_master_file=true
+compress=true

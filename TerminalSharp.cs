@@ -41,7 +41,12 @@ public class TerminalSharp : Control
     [Export]
     public List<Resource> availableStories;
     private bool canSelectGame;
-
+    [Export]
+    public string copyRightText = @"
+    GodotInkTerminal 0.0.1
+    MIT Licensed. 
+    
+";
     public override void _Ready()
     {
         // Retrieve or create some Nodes we know we'll need quite often
