@@ -68,6 +68,17 @@ public class TerminalSharp : Control
                 for (int i = 0; i < player.CurrentChoices.Length; ++i)
 
                     PrintToTerminal(i + ": " + player.CurrentChoices[i]);
+
+
+                if (Input.IsActionPressed("enter"))
+                {
+                    int i = -1;
+
+                    bool result = int.TryParse(input.Text, out i); //i now = 108  
+
+
+                }
+
                 /* container.Add(container.CreateSeparation(), 0.2f);
 				 // Add a button for each choice
 				 for (int i = 0; i < player.CurrentChoices.Length; ++i)
@@ -81,14 +92,10 @@ public class TerminalSharp : Control
 
             SetProcess(false);
         }
+
+
     }
 
-    protected void OnChoiceClick(int choiceIndex)
-    {
-        //container.CleanChoices();
-        // Choose the clicked choice
-        player.ChooseChoiceIndex(choiceIndex);
-    }
     public void PrintToTerminal(string text, bool newLine = true)
     {
         //func output_print(txt: String):
