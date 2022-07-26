@@ -4,7 +4,9 @@ But , first guess what I majored in.
 
 * It was deff Comp Sci 
 * No one cares what you majored in
-* COLLEGE IS A SCAM
+* College is a scam
+
+- Well, congrats, you're correct. I was able
 
 
 

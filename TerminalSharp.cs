@@ -125,7 +125,7 @@ public class TerminalSharp : Control
         var i = 0;
         availableStories.ForEach(e =>
        {
-           PrintToTerminal(i + ": " + e.ResourcePath);
+           PrintToTerminal(i + ": " + e.ResourcePath.Replace("res://ink_stories/", "").Replace(".json", ""));
            i++;
 
        });
