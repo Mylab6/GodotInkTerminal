@@ -36,11 +36,16 @@ __InkRuntime="*res://addons/inkgd/runtime/static/ink_runtime.gd"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/inkgd/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/paulloz.ink/plugin.cfg" )
 
 [global]
 
 build=false
+ink=false
+
+[ink]
+
+inklecate_path="E:\\GodotInkTerminal\\inklecate.exe"
 
 [input]
 

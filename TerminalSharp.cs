@@ -1,239 +1,105 @@
-#if TOOLS
 using Godot;
-using System;
-using System.Linq;
 
-[Tool]
 public class TerminalSharp : Control
 {
-	private InkPlayer player;
-	private bool storyStarted;
+    public InkPlayer player;
+    // private StoryContainer container;
+    public string prompt_template = "\n[color=#66aaff]godot@terminal:~ [b]$[/b][/color]";
 
-	private Button loadButton;
-	private FileDialog fileDialog;
-
-	private Label storyNameLabel;
-
-	private Button startButton;
-	private Button stopButton;
-	private Button clearButton;
-
-	private VBoxContainer storyText;
-	private VBoxContainer storyChoices;
-
-	private ScrollContainer scroll;
-	public string storyNameLabelText ; 
-		public string  currentStoryResPath ; //: String 
-public string  prompt_template = "\n[color=#66aaff]godot@terminal:~ [b]$[/b][/color]";
-
-public string input_template = "[color=#ffffff]%s[/color]";
-public string  error_template = "\n[color=#dd0000][ERROR] %s[/color]";
-
-//var parser := CommandParser.new()
-//var commands := BashLikeCommands.new()
-
-//onready var output := $Output as RichTextLabel
-public RichTextLabel output;
-public LineEdit input; 
-//onready var input := $Input as LineEdit
-	public override void _Ready()
-	{
+    public string input_template = "[color=#ffffff]%s[/color]";
+    public string error_template = "\n[color=#dd0000][ERROR] %s[/color]";
+    private Timer timer;
+    public RichTextLabel output;
+    public LineEdit input;
 
 
-		// Initialize top.
-		/*
-		loadButton = GetNode<Button>("Container/Left/Top/LoadButton");
-		fileDialog = GetNode<FileDialog>("FileDialog");
-		storyNameLabel = GetNode<Label>("Container/Left/Top/Label");
-		startButton = GetNode<Button>("Container/Left/Top/StartButton");
-		stopButton = GetNode<Button>("Container/Left/Top/StopButton");
-		clearButton = GetNode<Button>("Container/Left/Top/ClearButton");
+    public string introText = @"
 
-		loadButton.Connect("pressed", fileDialog, "popup_centered");
-		fileDialog.Connect("popup_hide", this, nameof(LoadStoryResource));
-		startButton.Connect("pressed", this, nameof(StartStory));
-		stopButton.Connect("pressed", this, nameof(StopStory));
-		clearButton.Connect("pressed", this, nameof(ClearStory), new Godot.Collections.Array { false });
+#####                             ### #     # #    # 
+#     #  ####  #####   ####  #####  #  ##    # #   #  
+#       #    # #    # #    #   #    #  # #   # #  #   
+#  #### #    # #    # #    #   #    #  #  #  # ###    
+#     # #    # #    # #    #   #    #  #   # # #  #   
+#     # #    # #    # #    #   #    #  #    ## #   #  
+#####   ####  #####   ####    #   ### #     # #    # 
 
-		// Initialize bottom.
-		storyText = GetNode<VBoxContainer>("Container/Left/Scroll/Margin/StoryText");
-		storyChoices = GetNode<VBoxContainer>("Container/Right/StoryChoices");
-		scroll = GetNode<ScrollContainer>("Container/Left/Scroll");
 
-		// Set icons.
-		loadButton.Icon = GetIcon("Load", "EditorIcons");
-		startButton.Icon = GetIcon("Play", "EditorIcons");
-		stopButton.Icon = GetIcon("Stop", "EditorIcons");
-		clearButton.Icon = GetIcon("Clear", "EditorIcons");
+- CommandParser: % s
+- BashLikeCommands: % s
+";
 
-		UpdateTop();
-		*/
-		UpdateTop(); 
-	}
+    //private Timer timer;
 
-	private void UpdateTop()
-	{
-		bool hasStory = player != null;
-
-		// Do not judge me.
-		storyNameLabelText = hasStory ? ((Resource)player.Get("story")).ResourcePath : string.Empty;
-/*
-		startButton.Visible = hasStory && !storyStarted;
-		stopButton.Visible = hasStory && storyStarted;
-		clearButton.Visible = hasStory;
-		clearButton.Disabled = storyText.GetChildCount() <= 0;
-
-		storyChoices.GetParent<Control>().Visible = hasStory;*/
-	}
-
-	private void LoadStoryResource()
-	{
-		StopStory();
-		player = null;
-
-		//if (!string.IsNullOrEmpty(fileDialog.CurrentFile))
-		//{
-			player = new InkPlayer();
-			player.LoadStory(ResourceLoader.Load<Resource>(currentStoryResPath));
-
-			player.Connect(nameof(InkPlayer.InkContinued), this, nameof(OnStoryContinued));
-			player.Connect(nameof(InkPlayer.InkChoices), this, nameof(OnStoryChoices));
-			player.Connect(nameof(InkPlayer.InkEnded), this, nameof(OnStoryEnded));
-
-			AddChild(player);
-		//}
-
-		UpdateTop();
-	}
-
-	private void StartStory()
-	{
-		if (player == null) return;
-
-		storyStarted = true;
-		player.Continue();
-
-		UpdateTop();
-	}
-
-	private void StopStory()
-	{
-		storyStarted = false;
-		player?.LoadStory();
-
-		ClearStory(true);
-	}
-
-	private void ClearStory(bool clearChoices)
-	{
-		RemoveAllStoryContent();
-		if (clearChoices)
-			RemoveAllChoices();
-
-		UpdateTop();
-	}
-
-	private void OnStoryContinued(string text, string[] tags)
-	{
-		text = text.Trim();
-		if (text.Length > 0)
-		{
-			Label newLine = new Label()
-			{
-				Autowrap = true,
-				Text = text,
-			};
-			//AddToStory(newLine);
-			AddToTerminal(text);
-			
-			if (tags.Length > 0)
-			{
-				newLine = new Label()
-				{
-					Autowrap = true,
-					Align = Label.AlignEnum.Center,
-					Text = $"# {string.Join(", ", tags)}",
-				};
-				newLine.AddColorOverride("font_color", GetColor("font_color_disabled", "Button"));
-				AddToStory(newLine);
-			}
-		}
-
-		player.Continue();
-	}
-
-    private void AddToTerminal(string text)
+    public override void _Ready()
     {
+        // Retrieve or create some Nodes we know we'll need quite often
+        player = GetNode<InkPlayer>("InkPlayer");
+        output = GetNode<RichTextLabel>("Output");
+        input = GetNode<LineEdit>("Input");
+        PrintToTerminal(introText);
+        PrintToTerminal(prompt_template);
+        //  container = GetNode<StoryContainer>("Container");
 
-		output.Text += text;
-
-       // throw new NotImplementedException();
+        timer = new Timer()
+        {
+            Autostart = false,
+            WaitTime = 0.3f,
+            OneShot = true,
+        };
+        AddChild(timer);
     }
 
-    private void OnStoryChoices(string[] choices)
-	{
-		int i = 0;
-		foreach (string choice in choices)
-		{
-			if (i < storyChoices.GetChildCount()) continue;
+    public override void _Process(float delta)
+    {
+        // If the time is running, we want to wait
+        if (timer.TimeLeft > 0) return;
 
-			Button button = new Button()
-			{
-				Text = choice,
-			};
-			button.Connect("pressed", this, nameof(ClickChoice), new Godot.Collections.Array() { i });
-			storyChoices.AddChild(button);
-			++i;
-		}
-	}
+        // Check if we have anything to consume
+        if (player.CanContinue)
+        {
+            string text = player.Continue().Trim();
+            if (text.Length > 0)
+                PrintToTerminal(text);
+            //container.Add(container.CreateText(text));
 
-	private void OnStoryEnded()
-	{
-		CanvasItem endOfStory = new VBoxContainer();
-		endOfStory.AddChild(new HSeparator());
-		CanvasItem endOfStoryLine = new HBoxContainer();
-		endOfStory.AddChild(endOfStoryLine);
-		endOfStory.AddChild(new HSeparator());
-		Control separator = new HSeparator()
-		{
-			SizeFlagsHorizontal = (int)(SizeFlags.Fill | SizeFlags.Expand),
-		};
-		Label endOfStoryText = new Label()
-		{
-			Text = "End of story"
-		};
-		endOfStoryLine.AddChild(separator);
-		endOfStoryLine.AddChild(endOfStoryText);
-		endOfStoryLine.AddChild(separator.Duplicate());
-		AddToStory(endOfStory);
-	}
+            // Maybe we have choices now that we moved on?
+            if (player.HasChoices)
+            {
+                for (int i = 0; i < player.CurrentChoices.Length; ++i)
 
-	private void ClickChoice(int idx)
-	{
-		player.ChooseChoiceIndex(idx);
-		RemoveAllChoices();
-		AddToStory(new HSeparator());
-		player.Continue();
-	}
+                    PrintToTerminal(i + ": " + player.CurrentChoices[i]);
+                /* container.Add(container.CreateSeparation(), 0.2f);
+				 // Add a button for each choice
+				 for (int i = 0; i < player.CurrentChoices.Length; ++i)
+					 container.Add(container.CreateChoice(player.CurrentChoices[i], i), 0.4f);
+			 */
+            }
+            timer.Start();
+        }
+        else if (!player.HasChoices)
+        {
 
-	private async void AddToStory(CanvasItem item)
-	{
-		storyText.AddChild(item);
-		await ToSignal(GetTree(), "idle_frame");
-		await ToSignal(GetTree(), "idle_frame");
-		scroll.ScrollVertical = (int)scroll.GetVScrollbar().MaxValue;
-	}
+            SetProcess(false);
+        }
+    }
 
-	private void RemoveAllStoryContent()
-	{
-		foreach (Node n in storyText.GetChildren())
-			storyText.RemoveChild(n);
-	}
+    protected void OnChoiceClick(int choiceIndex)
+    {
+        //container.CleanChoices();
+        // Choose the clicked choice
+        player.ChooseChoiceIndex(choiceIndex);
+    }
+    public void PrintToTerminal(string text, bool newLine = true)
+    {
+        //func output_print(txt: String):
+        output.Text += text;
+        if (newLine)
+        {
 
-	private void RemoveAllChoices()
-	{
-		foreach (Node n in storyChoices.GetChildren().OfType<Button>())
-			storyChoices.RemoveChild(n);
-	}
+            output.Text += "\n";
+        }
+
+    }
 }
-#endif
+
+

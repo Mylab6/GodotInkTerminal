@@ -1,6 +1,6 @@
 [remap]
 
-importer="inkgd.ink"
+importer="ink"
 type="Resource"
 path="res://.import/the_intercept.ink-e89c02ba72904325a3cffa75c1a139d4.res"
 
@@ -11,3 +11,5 @@ dest_files=[ "res://.import/the_intercept.ink-e89c02ba72904325a3cffa75c1a139d4.r
 
 [params]
 
+is_master_file=true
+compress=true

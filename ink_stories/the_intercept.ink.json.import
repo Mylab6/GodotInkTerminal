@@ -1,6 +1,6 @@
 [remap]
 
-importer="inkgd.ink.json"
+importer="ink"
 type="Resource"
 path="res://.import/the_intercept.ink.json-a5dd066f78aa910704dda952afdde604.res"
 
@@ -11,4 +11,5 @@ dest_files=[ "res://.import/the_intercept.ink.json-a5dd066f78aa910704dda952afdde
 
 [params]
 
+is_master_file=true
 compress=true
