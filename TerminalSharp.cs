@@ -65,7 +65,7 @@ public class TerminalSharp : Control
             OneShot = true,
         };
         AddChild(timer);
-        PrintToTerminal(introText);
+        PrintToTerminal(copyRightText);
         ShowGameSelect();
         //  Connect("InkEnded", this, "gameEnd");
         //  player.Connect("InkEnded", this, "gameEnd");
@@ -94,7 +94,7 @@ public class TerminalSharp : Control
             int i = -1;
             bool result = int.TryParse(input.Text, out i); //i now = 108  
             input.Text = string.Empty;
-
+            i = i - 1;
             if (player.HasChoices)
             {
                 PrintToTerminal(prompt_template + " Selected: " + player.CurrentChoices[i]);
@@ -116,8 +116,6 @@ public class TerminalSharp : Control
 
     private void selectGame(int i)
     {
-        if (i > availableStories.Count)
-            return;
         player.LoadStory(availableStories[i]);
         canSelectGame = false;
 
@@ -130,7 +128,7 @@ public class TerminalSharp : Control
         var i = 0;
         availableStories.ForEach(e =>
        {
-           PrintToTerminal(i + ": " + e.ResourcePath.Replace("res://ink_stories/", "").Replace(".json", ""));
+           PrintToTerminal((i + 1) + ": " + e.ResourcePath.Replace("res://ink_stories/", "").Replace(".json", ""));
            i++;
 
        });
@@ -156,7 +154,7 @@ public class TerminalSharp : Control
             if (player.HasChoices)
             {
                 for (int i = 0; i < player.CurrentChoices.Length; ++i)
-                    PrintToTerminal(i + ": " + player.CurrentChoices[i]);
+                    PrintToTerminal((i + 1) + ": " + player.CurrentChoices[i]);
             }
             timer.Start();
         }
