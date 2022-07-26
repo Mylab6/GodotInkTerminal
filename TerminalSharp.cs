@@ -78,20 +78,12 @@ public class TerminalSharp : Control
 
         if (Input.IsActionPressed("ui_accept"))
         {
-            try
-            {
-                //  PrintToTerminal(player.GetState());
 
-            }
-            catch (Exception)
-            {
-
-                //   throw;
-            }
             var fixedText = input.Text.Trim().ToLower();
             if (fixedText == "exit" || fixedText == "reset")
             {
                 ShowGameSelect();
+                //input.Text = string.Empty;
                 return;
             }
             int i = -1;
