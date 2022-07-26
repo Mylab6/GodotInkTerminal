@@ -23,19 +23,13 @@ public class TerminalSharp : Control
     [Export]
 
     public string introText = @"
-
-#####                             ### #     # #    # 
-#     #  ####  #####   ####  #####  #  ##    # #   #  
-#       #    # #    # #    #   #    #  # #   # #  #   
-#  #### #    # #    # #    #   #    #  #  #  # ###    
-#     # #    # #    # #    #   #    #  #   # # #  #   
-#     # #    # #    # #    #   #    #  #    ## #   #  
-#####   ####  #####   ####    #   ### #     # #    # 
-
-
-- CommandParser: .01
-- BashLikeCommands: .01
-";
+   ______                 __         _   _____           __       
+ .' ___  |               |  ]       / |_|_   _|         [  |  _   
+/ .'   \_|   .--.    .--.| |  .--. `| |-' | |   _ .--.   | | / ]  
+| |   ____ / .'`\ \/ /'`\' |/ .'`\ \| |   | |  [ `.-. |  | '' <   
+\ `.___]  || \__. || \__/  || \__. || |, _| |_  | | | |  | |`\ \  
+ `._____.'  '.__.'  '.__.;__]'.__.' \__/|_____|[___||__][__|  \_]                                                                
+     ";
 
     //private Timer timer;
     [Export]
@@ -43,9 +37,8 @@ public class TerminalSharp : Control
     private bool canSelectGame;
     [Export]
     public string copyRightText = @"
-    GodotInkTerminal 0.0.1
-    MIT Licensed. 
-    
+GodotInkTerminal 0.0.1
+MIT Licensed.     
 ";
     public override void _Ready()
     {
@@ -61,7 +54,7 @@ public class TerminalSharp : Control
         timer = new Timer()
         {
             Autostart = false,
-            WaitTime = 0.3f,
+            WaitTime = 0.4f,
             OneShot = true,
         };
         AddChild(timer);
