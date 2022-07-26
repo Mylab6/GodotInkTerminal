@@ -74,7 +74,7 @@ MIT Licensed.
     public override void _Input(InputEvent inputEvent)
     {
 
-        if (Input.IsActionPressed("ui_accept"))
+        if (Input.IsActionJustPressed("ui_accept"))
         {
 
             var fixedText = input.Text.Trim().ToLower();
@@ -96,6 +96,7 @@ MIT Licensed.
                 {
                     PrintToTerminal("Finished Story");
                     ShowGameSelect();
+                    return;
                 }
             }
             if (canSelectGame)
@@ -109,9 +110,16 @@ MIT Licensed.
 
     private void selectGame(int i)
     {
-        player.LoadStory(availableStories[i]);
-        canSelectGame = false;
+        try
+        {
+            player.LoadStory(availableStories[i]);
+            canSelectGame = false;
+        }
+        catch (Exception e)
+        {
 
+            PrintToTerminal(e.Message);
+        }
     }
 
     private void ShowGameSelect()
