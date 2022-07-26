@@ -22,10 +22,11 @@ jobs:
         # if any zip files are too big for your purposes, unzipping is
         # likely your best bet
     - run: |
-          unzip ./tester/builds/builds.zip
-          git config user.email github-actions@github.com
-          git config user.name github-actions
-          git add ./tester/builds/*
-          git reset -- ./tester/builds/builds.zip
-          git commit -m 'builds generated'
-          git push --force
+          ls
+    - uses: actions/upload-artifact@v1
+      with:
+        name: my-builds
+        path: tester/builds/builds.zip
+# now another job would be able to access the my-builds artifact
+# and do something with it
+        
