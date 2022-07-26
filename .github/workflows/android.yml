@@ -26,7 +26,7 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: my-builds
-        path: tester/builds/builds.zip
+        path: builds/builds.zip
 # now another job would be able to access the my-builds artifact
 # and do something with it
         
