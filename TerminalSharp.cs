@@ -24,8 +24,8 @@ public class TerminalSharp : Control
 #####   ####  #####   ####    #   ### #     # #    # 
 
 
-- CommandParser: % s
-- BashLikeCommands: % s
+- CommandParser: .01
+- BashLikeCommands: .01
 ";
 
     //private Timer timer;
@@ -49,6 +49,22 @@ public class TerminalSharp : Control
         AddChild(timer);
     }
 
+
+    public override void _Input(InputEvent inputEvent)
+    {
+
+        if (Input.IsActionPressed("ui_accept"))
+        {
+            int i = -1;
+
+            bool result = int.TryParse(input.Text, out i); //i now = 108  
+            PrintToTerminal(i.ToString());
+            player.ChooseChoiceIndex(i);
+
+
+        }
+    }
+
     public override void _Process(float delta)
     {
         // If the time is running, we want to wait
@@ -70,20 +86,11 @@ public class TerminalSharp : Control
                     PrintToTerminal(i + ": " + player.CurrentChoices[i]);
 
 
-                if (Input.IsActionPressed("enter"))
-                {
-                    int i = -1;
-
-                    bool result = int.TryParse(input.Text, out i); //i now = 108  
-
-
-                }
-
                 /* container.Add(container.CreateSeparation(), 0.2f);
-				 // Add a button for each choice
-				 for (int i = 0; i < player.CurrentChoices.Length; ++i)
-					 container.Add(container.CreateChoice(player.CurrentChoices[i], i), 0.4f);
-			 */
+ // Add a button for each choice
+ for (int i = 0; i < player.CurrentChoices.Length; ++i)
+     container.Add(container.CreateChoice(player.CurrentChoices[i], i), 0.4f);
+*/
             }
             timer.Start();
         }
