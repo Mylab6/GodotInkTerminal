@@ -121,6 +121,7 @@ jobs:
           PACKAGE: itch.zip
 
   export-mac:
+    if: ${{ false }}  
     name: Mac Export
     runs-on: ubuntu-20.04
     container:
@@ -154,6 +155,7 @@ jobs:
           PACKAGE: itch.zip
 
   export-android:
+    if: ${{ false }}  
     name: Android Export
     runs-on: ubuntu-20.04
     container:
