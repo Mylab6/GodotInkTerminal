@@ -76,7 +76,6 @@ MIT Licensed.
 
         if (Input.IsActionJustPressed("ui_accept"))
         {
-
             var fixedText = input.Text.Trim().ToLower();
             if (fixedText == "exit" || fixedText == "reset")
             {
@@ -94,9 +93,17 @@ MIT Licensed.
                 player.ChooseChoiceIndex(i);
                 if (!player.HasChoices)
                 {
-                    PrintToTerminal("Finished Story");
-                    ShowGameSelect();
-                    return;
+                    //   PrintToTerminal(player.GetState());
+                    if (player.CanContinue)
+                    {
+
+                    }
+                    else
+                    {
+                        PrintToTerminal("Finished Story");
+                        ShowGameSelect();
+                        return;
+                    }
                 }
             }
             if (canSelectGame)
@@ -105,6 +112,7 @@ MIT Licensed.
                 selectGame(i);
             }
 
+            UpdateUI();
         }
     }
 
@@ -126,6 +134,7 @@ MIT Licensed.
     {
         PrintToTerminal(introText);
         PrintToTerminal("Select Your Game :");
+        player.inkStory = null;
         var i = 0;
         availableStories.ForEach(e =>
        {
@@ -137,13 +146,9 @@ MIT Licensed.
         canSelectGame = true;
         //throw new NotImplementedException();
     }
-
-    public override void _Process(float delta)
+    // fix me, but 
+    public void UpdateUI()
     {
-        // If the time is running, we want to wait
-        if (timer.TimeLeft > 0) return;
-
-        // Check if we have anything to consume
         if (player.CanContinue)
         {
             string text = player.Continue().Trim();
@@ -159,8 +164,6 @@ MIT Licensed.
             }
             timer.Start();
         }
-
-
 
     }
 

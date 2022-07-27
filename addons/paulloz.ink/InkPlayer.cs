@@ -33,7 +33,7 @@ public class InkPlayer : Node
     public bool HasChoices => inkStory?.currentChoices.Count > 0;
     public string[] GlobalTags => inkStory?.globalTags?.ToArray() ?? default;
 
-    private Ink.Runtime.Story inkStory = null;
+    public Ink.Runtime.Story inkStory = null;
 
     public override void _Ready()
     {
