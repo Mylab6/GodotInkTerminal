@@ -7,7 +7,7 @@ on:
 env:
   GODOT_VERSION: 3.4.4
   EXPORT_NAME: godot-game-template
-  ITCH_IO: ${{ false }} #set to true if you want to enable automatic itch.io deploy
+  ITCH_IO: ${{ true }} #set to true if you want to enable automatic itch.io deploy
   RELEASE_ANDROID: ${{ false }} #set to  true if you want to enable automatic android release export
 
 jobs:
