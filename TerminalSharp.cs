@@ -48,7 +48,13 @@ MIT Licensed.
         // player.LoadStory()
         output = GetNode<RichTextLabel>("Output");
         input = GetNode<LineEdit>("Input");
+        player.Connect(nameof(InkPlayer.InkContinued), this, nameof(ContinueGame));
 
+			player.Connect(nameof(InkPlayer.InkChoices), this, nameof(ShowChoices));
+			player.Connect(nameof(InkPlayer.InkEnded), this, nameof(endGame));
+
+
+        //player.EmitSignal
         //  container = GetNode<StoryContainer>("Container");
 
         timer = new Timer()
@@ -87,32 +93,17 @@ MIT Licensed.
             bool result = int.TryParse(input.Text, out i); //i now = 108  
             input.Text = string.Empty;
             i = i - 1;
+
+            if(canSelectGame){
+                selectGame(i); 
+            }
             if (player.HasChoices)
             {
                 PrintToTerminal(prompt_template + " Selected: " + player.CurrentChoices[i]);
                 player.ChooseChoiceIndex(i);
-                if (!player.HasChoices)
-                {
-                    //   PrintToTerminal(player.GetState());
-                    if (player.CanContinue)
-                    {
 
-                    }
-                    else
-                    {
-                        PrintToTerminal("Finished Story");
-                        ShowGameSelect();
-                        return;
-                    }
-                }
-            }
-            if (canSelectGame)
-            {
-
-                selectGame(i);
             }
 
-            UpdateUI();
         }
     }
 
@@ -147,24 +138,22 @@ MIT Licensed.
         //throw new NotImplementedException();
     }
     // fix me, but 
-    public void UpdateUI()
+    public void ContinueGame(string text, string[] tags)
     {
         if (player.CanContinue)
         {
-            string text = player.Continue().Trim();
+          //  string text = player.Continue().Trim();
             if (text.Length > 0)
                 PrintToTerminal(text);
-            //container.Add(container.CreateText(text));
-
-            // Maybe we have choices now that we moved on?
-            if (player.HasChoices)
-            {
-                for (int i = 0; i < player.CurrentChoices.Length; ++i)
-                    PrintToTerminal((i + 1) + ": " + player.CurrentChoices[i]);
-            }
-            timer.Start();
+      
         }
 
+    }
+
+    private void ShowChoices()
+    {
+        for (int i = 0; i < player.CurrentChoices.Length; ++i)
+            PrintToTerminal((i + 1) + ": " + player.CurrentChoices[i]);
     }
 
     public void PrintToTerminal(string text, bool newLine = true)
