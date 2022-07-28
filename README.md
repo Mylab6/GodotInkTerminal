@@ -1,8 +1,9 @@
 ![image](https://user-images.githubusercontent.com/5963586/181391502-ca72fdf8-8582-4b26-b3b6-054142f2cb0a.png)
 
+This is a simple player for .ink games, if you don't know what ink is, 
+https://github.com/inkle/ink. 
 
 Playable here
-
 https://beatquestgames.itch.io/godotinkterminal
 
 Based off 
