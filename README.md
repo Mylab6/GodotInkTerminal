@@ -5,6 +5,15 @@ Playable here
 
 https://beatquestgames.itch.io/godotinkterminal
 
+Based off 
+https://github.com/winston-yallow/gd-tokenizer 
+And 
+https://github.com/paulloz/godot-ink/
+
+For some reason trying to remove 
+https://github.com/ephread/inkgd
+Causes builds to fail, so I'm leaving that in. 
+
 This is VERY rough right now, while the basic functionality is there,  many things aren't. 
 This project will allow you to play ink files in a simulated terminal. 
 In addition to this I've also setup a pipeline to deploy to GitHub pages, this doesn't work for some reason. 
